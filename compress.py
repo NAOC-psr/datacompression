@@ -15,7 +15,11 @@ filename = sys.argv[1]
 
 WINDOWSIZE = 4096 
 
-programstart = time.time()
+print """
+Running mean onebitise into filterbank file with a window size of %d samples.
+""" % WINDOWSIZE
+
+now = time.time()
 
 hdulist = pyfits.open(filename)
 hdu0 = hdulist[0]
@@ -50,96 +54,46 @@ header = hdu0.header + hdu1.header
 dtype = ''
 duration = tsamp * nsamp
 fch1 = hdu1.data['DAT_FREQ'][0][-1]
+data = hdu1.data['data'].sum(axis=2)
 
-pb = PB(maxValue = 64) 
+data = data.reshape((-1, nf))
+nsamp, nchan = data.shape
 
-data = hdu1.data['data']
 
-print 'time spent reading file:', time.time() - programstart
+from runningmean import runningmean
+import ctypes
+
+print 'time took to setting up.', time.time() - now
+
+dataout = np.zeros(data.shape, dtype='u1')
+
 now = time.time()
+runningmean(data, dataout, WINDOWSIZE)
+print 'time took to running mean:', time.time() -now
 
-data = data.sum(axis=2).squeeze()
-l,m,n = data.shape
-data = data.reshape(l,m,n/4,4).sum(axis=3).astype(np.float32)
-nchan = n/4
-print 'time spent quenching the frequency:', time.time() - now
-now = time.time()
-
-polX = []
-polY = []
-
-
-def runningmean(arr, windowsize):#running mean
-    #init
-    #fifo = deque(arr[:windowsize], maxlen = windowsize)
-    #ave = sum(fifo) / windowsize
-    ave = arr[:windowsize].mean()
-    res = []
-    arrlen = len(arr)
-    for i in range(windowsize,  arrlen):
-        a = arr[i]
-        #head = fifo.pop()
-        #fifo.append(a)
-        head = arr[i-windowsize]
-        res.append(head > ave)
-        ave += (a - head)/windowsize
-    for i in range(windowsize):
-        a = arr[-1*i]
-        #head = fifo.pop()
-        #fifo.append(a)
-        head = arr[arrlen + i - windowsize]
-        res.append(head > ave)
-        ave += (a - head)/windowsize
-    return np.array(res).astype(np.uint8)
-
-
-def func(i):
-    dataS = data[:,:,i].flatten()
-    rm = runningmean(dataS, WINDOWSIZE)
-    #pb(i)
-    return rm
-
-
-#res = np.array(threadit(func, [[i] for i in range(nchan)])).T
-onebitdata = np.array(threadit(func, [[i] for i in range(nchan)[::-1]])).T
-print 'time spent medfilt the data:', time.time() - now
-
+#l,m = dataout.shape
+#dataout = dataout.reshape(l/64,64,m).sum(axis=1)
 #from pylab import *
-#imshow(onebitdata, aspect='auto')
+#imshow(dataout.T, aspect='auto')
 #show()
 
-#data = onebitdata.reshape(-1,4096,nchan)
-#l,m,n = data.shape
-#data = data.reshape(l*m,n)
-#m,n = data.shape
-#data = data.reshape(m/64, 64, n)
-#data = data.mean(axis=1)
-
 now = time.time()
-data = np.packbits(onebitdata.reshape(-1,8)[:,::-1])
-#data = onebitdata.flatten()
+data = np.packbits(dataout.reshape(-1,8)[:,::-1])
 print 'bitpacking took:', time.time() - now
+
 now = time.time()
 
 from filwriter import filterbank_saver
+outname = filename[:-5] + '.fil'
 
-fout = open('test.fil', 'wb')
+fout = open(outname, 'wb')
 ibeam = 0
 nbeam = 1
 nbits = 1
-df *= -4
-#print fout, sourcename, ibeam, nbeam, obsmjd, tstart, Azimuth, Zenith, ra, dec, nchan, nbits, tsamp, fch1, df
+df *= -1
 filterbank_saver(fout, sourcename, ibeam, nbeam, obsmjd, tstart, Azimuth, Zenith, src_raj, src_dej, nchan, nbits, tsamp, fch1, df)
 fout.write(data)
 fout.close()
 print 'save file took:', time.time() - now
-
-'''
-from pylab import *
-imshow(onebitdata.T, aspect='auto', origin='low')  #, extent=(0., float(duration), float(fmin), float(fmax)))
-#xlabel('t (s)')
-#ylabel('frequency (MHz)')
-show()
-'''
 
 
