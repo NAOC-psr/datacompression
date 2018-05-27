@@ -18,13 +18,10 @@ WINDOWSIZE = 4096
 programstart = time.time()
 
 hdulist = pyfits.open(filename)
-#print len(hdulist) 
 hdu0 = hdulist[0]
 hdu1 = hdulist[1]
 #data1 = hdu1.data['data']
 header1 = hdu1.header
-#print hdu0.header
-#print hdu1.header
 
 obsfreq = hdu0.header['OBSFREQ']
 obsnchan = hdu0.header['OBSNCHAN']
@@ -52,29 +49,15 @@ Zenith = hdu1.data['TEL_ZEN'][0]
 header = hdu0.header + hdu1.header
 dtype = ''
 duration = tsamp * nsamp
-fch1 = hdu1.data['DAT_FREQ'][0][0]
-
-
-#print obsfreq
-#print type(duration)
-#print type(fmin), type(fmax)
+fch1 = hdu1.data['DAT_FREQ'][0][-1]
 
 pb = PB(maxValue = 64) 
 
 data = hdu1.data['data']
-#print data.shape
 
 print 'time spent reading file:', time.time() - programstart
 now = time.time()
 
-#diffdata = np.diff(data, n=WINDOWSIZE, axis=1)
-#cumdata = np.cumsum(data, axis=1) 
-#print cumdata.shape
-#print 'time spent sum the data:', time.time() - now
-#diffdata = np.diff(cumdata, n=WINDOWSIZE, axis=1)
-#print 'time spent diff the data:', time.time() - now
-
-#print data.shape
 data = data.sum(axis=2).squeeze()
 l,m,n = data.shape
 data = data.reshape(l,m,n/4,4).sum(axis=3).astype(np.float32)
@@ -107,10 +90,6 @@ def runningmean(arr, windowsize):#running mean
 
 
 def func(i):
-    #dataX = data[:,:,0,i,0].flatten()
-    #dataY = data[:,:,1,i,0].flatten()
-    #datapolX = medfilt(dataX, WINDOWSIZE)
-    #datapolY = medfilt(dataY, WINDOWSIZE)
     dataS = data[:,:,i].flatten()
     rm = runningmean(dataS, WINDOWSIZE)
     #pb(i)
@@ -118,16 +97,25 @@ def func(i):
 
 
 #res = np.array(threadit(func, [[i] for i in range(nchan)])).T
-onebitdata = np.array(threadit(func, [[i] for i in range(nchan)])).T
+onebitdata = np.array(threadit(func, [[i] for i in range(nchan)[::-1]])).T
 print 'time spent medfilt the data:', time.time() - now
 
+#from pylab import *
+#imshow(onebitdata, aspect='auto')
+#show()
 
-data = onebitdata.reshape(-1,4096,nchan)
-l,m,n = data.shape
-data = data.reshape(l*m,n)
-m,n = data.shape
-data = data.reshape(m/64, 64, n)
-data = data.mean(axis=1)
+#data = onebitdata.reshape(-1,4096,nchan)
+#l,m,n = data.shape
+#data = data.reshape(l*m,n)
+#m,n = data.shape
+#data = data.reshape(m/64, 64, n)
+#data = data.mean(axis=1)
+
+now = time.time()
+data = np.packbits(onebitdata.reshape(-1,8)[:,::-1])
+#data = onebitdata.flatten()
+print 'bitpacking took:', time.time() - now
+now = time.time()
 
 from filwriter import filterbank_saver
 
@@ -135,11 +123,12 @@ fout = open('test.fil', 'wb')
 ibeam = 0
 nbeam = 1
 nbits = 1
+df *= -4
 #print fout, sourcename, ibeam, nbeam, obsmjd, tstart, Azimuth, Zenith, ra, dec, nchan, nbits, tsamp, fch1, df
 filterbank_saver(fout, sourcename, ibeam, nbeam, obsmjd, tstart, Azimuth, Zenith, src_raj, src_dej, nchan, nbits, tsamp, fch1, df)
-data = np.packbits(onebitdata.flatten())
 fout.write(data)
 fout.close()
+print 'save file took:', time.time() - now
 
 '''
 from pylab import *
