@@ -54,10 +54,10 @@ header = hdu0.header + hdu1.header
 dtype = ''
 duration = tsamp * nsamp
 fch1 = hdu1.data['DAT_FREQ'][0][-1]
-data = hdu1.data['data'].sum(axis=2)
+data = hdu1.data['data']
 
-data = data.reshape((-1, nf))
-nsamp, nchan = data.shape
+data = data.reshape((-1, 2, nf))
+nsamp, npol, nchan = data.shape
 
 
 from runningmean import runningmean
@@ -65,7 +65,7 @@ import ctypes
 
 print 'time took to setting up.', time.time() - now
 
-dataout = np.zeros(data.shape, dtype='u1')
+dataout = np.zeros((nsamp, nchan), dtype='u1')
 
 now = time.time()
 runningmean(data, dataout, WINDOWSIZE)

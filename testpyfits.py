@@ -51,6 +51,8 @@ print type(duration)
 print type(fmin), type(fmax)
 
 data = hdu1.data['data']
+print data.shape
+'''
 data = data.sum(axis=2)
 data = data.squeeze()
 l,m,n = data.shape
@@ -58,7 +60,6 @@ data = data.reshape(l*m,n)
 m,n = data.shape
 data = data.reshape(m/256, 256, n)
 data = data.mean(axis=1)
-print data.shape
 
 from pylab import imshow, plot, show, xlabel, ylabel
 imshow(data.T, aspect='auto', origin='low', extent=(0., float(duration), float(fmin), float(fmax)))
@@ -66,3 +67,4 @@ imshow(data.T, aspect='auto', origin='low', extent=(0., float(duration), float(f
 xlabel('t (s)')
 ylabel('frequency (MHz)')
 show()
+'''
