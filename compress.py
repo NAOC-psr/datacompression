@@ -71,19 +71,23 @@ polY = []
 
 def runningmean(arr, windowsize):#running mean
     #init
-    fifo = deque(arr[:windowsize], maxlen = windowsize)
-    ave = sum(fifo) / windowsize
+    #fifo = deque(arr[:windowsize], maxlen = windowsize)
+    #ave = sum(fifo) / windowsize
+    ave = arr[:windowsize].mean()
     res = []
-    for i in range(windowsize,  len(arr)):
+    arrlen = len(arr)
+    for i in range(windowsize,  arrlen):
         a = arr[i]
-        head = fifo.pop()
-        fifo.append(a)
+        #head = fifo.pop()
+        #fifo.append(a)
+        head = arr[i-windowsize]
         res.append(head > ave)
         ave += (a - head)/windowsize
     for i in range(windowsize):
         a = arr[-1*i]
-        head = fifo.pop()
-        fifo.append(a)
+        #head = fifo.pop()
+        #fifo.append(a)
+        head = arr[arrlen + i - windowsize]
         res.append(head > ave)
         ave += (a - head)/windowsize
     return np.array(res).astype(np.uint8)
@@ -132,7 +136,7 @@ print 'save file took:', time.time() - now
 
 '''
 from pylab import *
-imshow(data.T, aspect='auto', origin='low')  #, extent=(0., float(duration), float(fmin), float(fmax)))
+imshow(onebitdata.T, aspect='auto', origin='low')  #, extent=(0., float(duration), float(fmin), float(fmax)))
 #xlabel('t (s)')
 #ylabel('frequency (MHz)')
 show()
