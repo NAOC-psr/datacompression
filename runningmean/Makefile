@@ -1,7 +1,10 @@
 .PHONY: all
 all: runningmean.so 
 runningmean.so:runningmean.c
-	gcc -shared -I/usr/include/python2.7 -o runningmean.so -fPIC runningmean.c -w -lm -O3 -lgomp -fopenmp -DHAVE_OPENMP 
+	gcc -shared -I/usr/include/python2.7 -o runningmean.so -fPIC runningmean.c -w -lm -O3  -DHAVE_OPENMP 
+#Winson: remove -lgomp (gnu openmp library), -fopenmp(openmp option in C) is removed to optimize the performance
+
+#gcc -shared -I/usr/include/python2.7 -o runningmean.so -fPIC runningmean.c -w -lm -O3 -lgomp -fopenmp -DHAVE_OPENMP 
 
 #test.so:test.c
 	#gcc -shared -I/usr/include/python2.7 -o test.so -fPIC test.c 

@@ -61,8 +61,8 @@ data = data.mean(axis=1)
 print data.shape
 
 from pylab import imshow, show, xlabel, ylabel, plot
-#imshow(data.T, aspect='auto', origin='low', extent=(0., float(duration), float(fmin), float(fmax)))
-plot(data.sum(axis=1))
+imshow(data.T, aspect='auto', origin='low', extent=(0., float(duration), float(fmin), float(fmax)))
+#plot(data.sum(axis=1))
 xlabel('t (s)')
 ylabel('frequency (MHz)')
 show()
