@@ -1,7 +1,9 @@
 .PHONY: all
-all: runningmean.so 
+all: runningmean.so test
 runningmean.so:runningmean.c
 	gcc -shared -I/usr/include/python2.7 -o runningmean.so -fPIC runningmean.c -w -lm -O3  -DHAVE_OPENMP  -std=c99
+test: test.c
+	gcc -shared -I/usr/include/python2.7 -o test -fPIC test.c -w -lm -O3  -DHAVE_OPENMP  -std=c99 -I/usr/include/cfitsio/  -lcfitsio
 
 clean:
 	rm *.so
