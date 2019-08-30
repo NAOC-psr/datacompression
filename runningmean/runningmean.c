@@ -3,6 +3,11 @@
 #define MAXNCHANS  10000
 
 void run(unsigned char *data, int nsamp, int nchan, unsigned char *outdata, int windowsize){
+    /* Loop through each channel i, using ave[i] to track the running mean and
+     * head[i] and tail[i] to track the head and tail. Using the head and tail
+     * value of the window to update the runnig mean. sum[i] is used only to
+     * calculate the ave[i]
+     */
 
     float ave[MAXNCHANS];
     float head[MAXNCHANS];
