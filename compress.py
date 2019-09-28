@@ -56,8 +56,12 @@ duration = tsamp * nsamp
 fch1 = hdu1.data['DAT_FREQ'][0][-1]
 data = hdu1.data['data']
 
-data = data.reshape((-1, 2, nf))
-nsamp, npol, nchan = data.shape
+#nsamp, npol, nchan = data.shape
+#data = data.reshape((-1, npol, nf)).sum(axis=1)
+data = data[:,:,:2,:,:].sum(axis=2)
+data = data.squeeze()
+nsub, nint, nchan = data.shape
+data = data.reshape(nsamp, nchan)
 
 
 from runningmean import runningmean
@@ -68,7 +72,7 @@ print 'time took to setting up.', time.time() - now
 dataout = np.zeros((nsamp, nchan), dtype='u1')
 
 now = time.time()
-runningmean(data, dataout, WINDOWSIZE)
+dataout = runningmean(data, WINDOWSIZE)
 print 'time took to running mean:', time.time() -now
 
 #l,m = dataout.shape
