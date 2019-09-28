@@ -68,7 +68,7 @@ print 'time took to setting up.', time.time() - now
 dataout = np.zeros(data.shape, dtype='u1')
 
 now = time.time()
-runningmean(data, dataout, WINDOWSIZE)
+dataout = runningmean(data, WINDOWSIZE)
 print 'time took to running mean:', time.time() -now
 
 #l,m = dataout.shape
