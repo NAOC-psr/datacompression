@@ -23,7 +23,7 @@ def seven_beam_dump(fout, source_name, ibeam, nbeams, STT_MJDI, STT_MJDS, az_sta
 def filterbank_saver(fout, source_name, ibeam, nbeams, STT_MJDI, STT_MJDS, az_start, za_start, src_raj, src_dej, nchans, nbits, tsamp, fch1, foff):
     #source_name = "BACKEND_TEST_BEAM0"
     machine_id = 8 
-    telescope_id = 9 
+    telescope_id = 21
     nchans =  nchans
     nbits = nbits
     #nbeams = 7 
