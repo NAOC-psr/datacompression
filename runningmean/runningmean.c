@@ -47,7 +47,7 @@ void run(unsigned char *data, int nsamp, int nchan, unsigned char *outdata, int 
         /*for(j=nchan/2;j>=nchan/2-1;j--){*/
             k = (nsamp+i-windowsize);
             head[j] =  (float) data[2*k*nchan + j] + (float) data[(2*k+1)*nchan + j] ;
-            k = (nchan-1*i);
+            k = (nsamp-i-1);
             tail[j] =  (float) data[2*k*nchan + j] + (float) data[(2*k+1)*nchan + j];
             outdata[(nsamp+i-windowsize)*nchan + nchan-j-1] = (unsigned char) (head[j] > ave[j]);
             ave[j]  += (tail[j] - head[j])/ws;
