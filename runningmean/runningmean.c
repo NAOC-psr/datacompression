@@ -40,7 +40,7 @@ void run(unsigned long long int *data, int nsamp, int nchan, unsigned char *outd
         for(j=nchan-1;j>=0;j--){
         /*for(j=nchan/2;j>=nchan/2-1;j--){*/
             head[j] =  data[(nsamp+i-windowsize)*nchan + j];
-            tail[j] =  data[(nchan-1*i)*nchan + j];
+            tail[j] =  data[(nsamp-i-1)*nchan + j];
             outdata[(i+nsamp-windowsize)*nchan + nchan-j-1] = (unsigned char) (head[j] > ave[j]);
             ave[j]  += ((float)tail[j] - (float)head[j])/ws;
             /*printf("i %d, j %d, head %d tail %d (tail[j] - head[j])/ws %f, ave[j] %f\n ", i, j, head[j], tail[j],  ((float)tail[j] - (float)head[j])/ws, ave[j]);*/
