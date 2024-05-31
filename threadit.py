@@ -42,15 +42,15 @@ def threadit(func, arglist, OnOffSwitch={'state':False}, num_threads=50):
     
 def spam(func):
     args = getargspec(func)[0]
-    print 'func args:', args
+    print('func args:', args)
     if not 'worker_id' in args:
-        print 'without worker_id'
+        print('without worker_id')
         kws = {'worker_id':0}
         def wrap_func(*args, **kws):
             return func(*args)
         return wrap_func
     else:
-        print 'with worker_id'
+        print('with worker_id')
         return func
 
 
@@ -101,7 +101,7 @@ def spamit(func, arglist, OnOffSwitch={'state':False}, num_threads=50):
                 resultdict.update(res)
             else:
                 exc_info = to_child.recv()
-                print exc_info
+                print(exc_info)
                 #raise exc_info[1]
         for p in procs:
             p.join()
@@ -162,7 +162,7 @@ def workerpool(func, arglist, OnOffSwitch={'state':False}, num_threads=50):
                 resultdict.update(res)
             else:
                 exc_info = to_child.recv()
-                print exc_info
+                print(exc_info)
                 #raise exc_info[1]
         for p in procs:
             p.join()

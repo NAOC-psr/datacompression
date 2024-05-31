@@ -73,13 +73,13 @@ class progressBar:
     def __call__(self, value):
         """ Updates the amount, and writes to stdout. Prints a carriage return
             first, so it will overwrite the current line in stdout."""
-        print '\r',
+        print('\r', end=' ')
         self.updateAmount(value)
         sys.stdout.write(str(self))
         sys.stdout.flush()
 
 try:
-    import Tkinter
+    import tkinter
 
     class PB:
         
@@ -90,10 +90,10 @@ try:
         # Create Progress Bar
         def __init__(self, width, height):
             #self.__root = Tkinter.Toplevel()
-            self.__root = Tkinter.Tk() #updated by Petr
+            self.__root = tkinter.Tk() #updated by Petr
             self.__root.resizable(False, False)
             self.__root.title('Wait please...')
-            self.__canvas = Tkinter.Canvas(self.__root, width=width, height=height)
+            self.__canvas = tkinter.Canvas(self.__root, width=width, height=height)
             self.__canvas.grid()
             self.__width = width
             self.__height = height
@@ -110,7 +110,7 @@ try:
 
         # Update Progress Bar
         def update(self, ratio):
-            self.__canvas.delete(Tkinter.ALL)
+            self.__canvas.delete(tkinter.ALL)
             self.__canvas.create_rectangle(0, 0, self.__width * ratio, \
                                            self.__height, fill='blue')
             self.__root.update()

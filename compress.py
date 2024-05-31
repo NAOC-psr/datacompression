@@ -15,9 +15,9 @@ filename = sys.argv[1]
 
 WINDOWSIZE = 4096 
 
-print """
+print("""
 Running mean onebitise into filterbank file with a window size of %d samples.
-""" % WINDOWSIZE
+""" % WINDOWSIZE)
 
 now = time.time()
 
@@ -63,13 +63,13 @@ nsamp, nchan = data.shape
 from runningmean import runningmean
 import ctypes
 
-print 'time took to setting up.', time.time() - now
+print('time took to setting up.', time.time() - now)
 
 dataout = np.zeros(data.shape, dtype='u1')
 
 now = time.time()
 dataout = runningmean(data, WINDOWSIZE)
-print 'time took to running mean:', time.time() -now
+print('time took to running mean:', time.time() -now)
 
 #l,m = dataout.shape
 #dataout = dataout.reshape(l/64,64,m).sum(axis=1)
@@ -79,7 +79,7 @@ print 'time took to running mean:', time.time() -now
 
 now = time.time()
 data = np.packbits(dataout.reshape(-1,8)[:,::-1])
-print 'bitpacking took:', time.time() - now
+print('bitpacking took:', time.time() - now)
 
 now = time.time()
 
@@ -94,6 +94,6 @@ df *= -1
 filterbank_saver(fout, sourcename, ibeam, nbeam, obsmjd, tstart, Azimuth, Zenith, src_raj, src_dej, nchan, nbits, tsamp, fch1, df)
 fout.write(data)
 fout.close()
-print 'save file took:', time.time() - now
+print('save file took:', time.time() - now)
 
 
